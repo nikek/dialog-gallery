@@ -4,47 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dialog Gallery</title>
-    <style>
-      body:has(dialog[open]) {
-        overflow: hidden;
-      }
-
-      dialog {
-        padding: 0;
-
-        &::backdrop {
-          backdrop-filter: blur(5px);
-          cursor: zoom-out;
-        }
-
-        section {
-          padding: 10px;
-        }
-
-        img {
-          width: 100%;
-          height: auto;
-        }
-      }
-
-      .gallery {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        justify-content: flex-start;
-      }
-
-      .gallery-item {
-        border: 1px solid #ccc;
-        padding: 10px;
-        cursor: pointer;
-      }
-
-      button {
-        cursor: pointer;
-        user-select: none;
-      }
-    </style>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <h1>Dialog Gallery</h1>
@@ -52,107 +12,25 @@
       A lightbox style dialog gallery for your images. rotating images using
       radio buttons.
     </p>
-    <div class="gallery">
-      <button class="gallery-item" data-image-id="95">
+    <ne-dialog-gallery thumbnail-size="100">
+      <a href="https://picsum.photos/id/95/800">
         <img src="https://picsum.photos/id/95/200" alt="Image 1" />
-      </button>
-      <button class="gallery-item" data-image-id="93">
+      </a>
+      <a href="https://picsum.photos/id/93/800">
         <img src="https://picsum.photos/id/93/200" alt="Image 2" />
-      </button>
-      <button class="gallery-item" data-image-id="98">
+      </a>
+      <a href="https://picsum.photos/id/98/800">
         <img src="https://picsum.photos/id/98/200" alt="Image 3" />
-      </button>
-    </div>
-    <dialog id="dialog">
-      <section>
-        <img id="dialogImage" src="" alt="Image" />
-        <form id="dialogForm" action="#">
-          <button type="button" id="prev">&lt;</button>
-          <input
-            type="radio"
-            name="image"
-            id="radio_95"
-            value="https://picsum.photos/id/95/500"
-          />
-          <input
-            type="radio"
-            name="image"
-            id="radio_93"
-            value="https://picsum.photos/id/93/500"
-          />
-          <input
-            type="radio"
-            name="image"
-            id="radio_98"
-            value="https://picsum.photos/id/98/500"
-          />
-          <button type="button" id="next">&gt;</button>
-        </form>
-        <button type="button" id="closeBtn">Close</button>
-      </section>
-    </dialog>
-
+      </a>
+    </ne-dialog-gallery>
+    
     <script type="module">
-      const radios = dialog.querySelectorAll("input[type='radio']");
-
-      // Reusable function to navigate using the arrow keys or prev/next buttons
-      function navigate(direction) {
-        const current = Array.from(radios).findIndex((radio) => radio.checked);
-        if (direction === "prev") {
-          const prevIndex = current === 0 ? radios.length - 1 : current - 1;
-          radios[prevIndex].checked = true;
-        } else if (direction === "next") {
-          const nextIndex = current === radios.length - 1 ? 0 : current + 1;
-          radios[nextIndex].checked = true;
-        }
-
-        dialogForm.dispatchEvent(new Event("change"));
-      }
-
-      // Use keyboard navigation to navigate the images anywhere within the dialog
-      dialog.addEventListener("keydown", (e) => {
-        if (e.key === "ArrowLeft") {
-          navigate("prev");
-        } else if (e.key === "ArrowRight") {
-          navigate("next");
-        }
-      });
-
-      // Use the prev and next buttons to navigate the images
-      const prevButton = document.getElementById("prev");
-      prevButton.addEventListener("click", () => navigate("prev"));
-      const nextButton = document.getElementById("next");
-      nextButton.addEventListener("click", () => navigate("next"));
-
-      // Use the gallery items to open the dialog and set the image
-      const galleryItems = document.querySelectorAll(".gallery-item");
-      galleryItems.forEach((item) => {
-        item.addEventListener("click", (e) => {
-          dialog.showModal();
-          dialogImage.src = `https://picsum.photos/id/${item.dataset.imageId}/500`;
-
-          const imageRadio = dialog.querySelector(
-            `#radio_${item.dataset.imageId}`
-          );
-          imageRadio.checked = true;
-          imageRadio.focus();
-          dialogForm.dispatchEvent(new Event("change"));
-        });
-      });
-
-      // Use the radio buttons to navigate the images
-      dialogForm.addEventListener("change", (e) => {
-        const radioValue = dialogForm.elements.namedItem("image").value;
-        dialogImage.src = radioValue;
-      });
-
-      // Light dismiss the dialog when clicking on the backdrop
-      dialog.addEventListener("click", ({ target: dialog }) => {
-        if (dialog.nodeName === "DIALOG") dialog.close("dismiss");
-      });
-
-      // Close with the close button
-      closeBtn.addEventListener("click", () => dialog.close());
+      import "./src/style.css";
+      import { NeDialogGallery } from "./src/ne-dialog-gallery/ne-dialog-gallery.ts";
+      customElements.define("ne-dialog-gallery", NeDialogGallery);
     </script>
+  </body>
+</html>
+
   </body>
 </html>

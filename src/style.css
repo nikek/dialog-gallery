@@ -1,0 +1,58 @@
+:root {
+  font-family: Georgia, "Times New Roman", Times, serif;
+}
+
+h1 {
+  font-style: italic;
+}
+
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+
+dialog {
+  padding: 0;
+  max-height: 90vh;
+  max-width: max-content;
+
+  &::backdrop {
+    backdrop-filter: blur(5px);
+    cursor: zoom-out;
+  }
+
+  section {
+    padding: 10px;
+  }
+
+  img {
+    display: block;
+    margin: 0 auto;
+    max-width: 90vmin;
+    max-height: 80vmin;
+
+    height: auto;
+  }
+
+  form {
+    display: flex;
+    gap: 10px;
+  }
+}
+
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.gallery-item {
+  border: 1px solid #ccc;
+  padding: 10px;
+  cursor: pointer;
+}
+
+button {
+  cursor: pointer;
+  user-select: none;
+}
