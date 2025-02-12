@@ -1,22 +1,38 @@
+function createDialogImageListItem(src: string, alt: string, id: string) {
+  const li = document.createElement("li");
+  const img = document.createElement("img");
+  Object.assign(img, { id, src, alt, loading: "lazy" });
+  li.appendChild(img);
+  return li;
+}
+
+function createDialogAnchorListItem(id: string) {
+  const li = document.createElement("li");
+  const a = document.createElement("a");
+  a.href = `#${id}`;
+
+  li.appendChild(a);
+  return li;
+}
 const dialogTemplate = document.createElement("template");
 
 dialogTemplate.innerHTML = String.raw`
 <dialog>
   <section>
-    <img id="dialogImage" src="" alt="Image" />
-    <form id="dialogForm" action="#">
+    <ul id="dialogImageList">
+    </ul>
+    <nav id="dialogNav">
       <button type="button" id="prev">&lt;</button>
-      <nav id="dialogNav"></nav>
+      <ul id="dialogNavList">
+      </ul>
       <button type="button" id="next">&gt;</button>
-      <button type="button" id="closeBtn">Close</button>
-    </form>
+    </nav>
+    <button type="button" id="closeBtn">Close</button>
   </section>
 </dialog>
 `;
 
 export class NeDialogGallery extends HTMLElement {
-  #radios: HTMLInputElement[] = [];
-
   constructor() {
     super();
   }
@@ -26,78 +42,39 @@ export class NeDialogGallery extends HTMLElement {
   }
 
   setup() {
-    // Render thumbnails as anchors with images as children just like the original content but switch out the href to target an id within the dialog, also add event listeners to open the dialog when clicked
     const df = dialogTemplate.content.cloneNode(true) as DocumentFragment;
     const dialog = df.querySelector("dialog")! as HTMLDialogElement;
-    this.appendChild(dialog);
-    const dialogForm = dialog.querySelector("form")! as HTMLFormElement;
-    const dialogImage = dialog.querySelector(
-      "#dialogImage"
-    )! as HTMLImageElement;
-    const dialogNav = dialog.querySelector("#dialogNav")!;
-    console.log(dialogNav);
+
+    const dialogImageList = dialog.querySelector(
+      "#dialogImageList"
+    )! as HTMLUListElement;
+    const dialogNavList = dialog.querySelector(
+      "#dialogNavList"
+    )! as HTMLUListElement;
     const dialogClose = dialog.querySelector("#closeBtn")!;
 
     const thumbnails = this.querySelectorAll("a");
     thumbnails.forEach((thumbnail, i) => {
-      const radio = document.createElement("input");
-      radio.type = "radio";
-      radio.name = "image";
-      radio.id = `radio_${i}`;
-      radio.value = thumbnail.href;
-      dialogNav.append(radio);
-      this.#radios.push(radio);
+      const image = thumbnail.querySelector("img")! as HTMLImageElement;
+      const imageLI = createDialogImageListItem(
+        thumbnail.href,
+        image.alt,
+        `dialogImage_${i}`
+      );
+      dialogImageList.appendChild(imageLI);
+
+      const anchorLi = createDialogAnchorListItem(`dialogImage_${i}`);
+      dialogNavList.appendChild(anchorLi);
 
       thumbnail.addEventListener("click", (e) => {
         if (e.metaKey) {
           return;
         }
         e.preventDefault();
-        dialog.showModal();
-        dialogImage.src = thumbnail.href;
-        radio.checked = true;
-        radio.focus();
-        dialogForm.dispatchEvent(new Event("change"));
-      }); // maybe open dialog during capture phase..
-    });
-
-    // Reusable function to navigate using the arrow keys or prev/next buttons
-    const navigate = (direction: "prev" | "next") => {
-      const current = this.#radios.findIndex((radio) => radio.checked);
-      if (direction === "prev") {
-        const prevIndex = current === 0 ? this.#radios.length - 1 : current - 1;
-        this.#radios[prevIndex].checked = true;
-      } else if (direction === "next") {
-        const nextIndex = current === this.#radios.length - 1 ? 0 : current + 1;
-        this.#radios[nextIndex].checked = true;
-      }
-
-      dialogForm.dispatchEvent(new Event("change"));
-    };
-
-    // Use keyboard navigation to navigate the images anywhere within the dialog
-    dialog.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowLeft") {
-        navigate("prev");
-      } else if (e.key === "ArrowRight") {
-        navigate("next");
-      }
-    });
-
-    // Use the prev and next buttons to navigate the images
-    const prevButton = dialog.querySelector("#prev")!;
-    prevButton.addEventListener("click", () => navigate("prev"));
-    const nextButton = dialog.querySelector("#next")!;
-    nextButton.addEventListener("click", () => navigate("next"));
-
-    // Use the radio buttons to navigate the images
-    dialogForm.addEventListener("change", () => {
-      const radioValue = (
-        dialogForm.elements.namedItem("image") as RadioNodeList
-      ).value;
-      if (radioValue) {
-        dialogImage.src = radioValue;
-      }
+        dialog.showModal(); // maybe open dialog during capture phase..
+        imageLI.scrollIntoView({ behavior: "smooth" });
+        anchorLi.focus();
+      });
     });
 
     // Light dismiss the dialog when clicking on the backdrop
@@ -106,11 +83,13 @@ export class NeDialogGallery extends HTMLElement {
         dialog.close("dismiss");
     });
 
-    dialog.addEventListener("close", () => {
-      dialogImage.src = "";
-    });
+    // dialog.addEventListener("close", () => {
+    //   dialogImage.src = "";
+    // });
 
     // Close with the close button
     dialogClose.addEventListener("click", () => dialog.close());
+
+    this.appendChild(dialog);
   }
 }

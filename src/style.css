@@ -10,10 +10,15 @@ body:has(dialog[open]) {
   overflow: hidden;
 }
 
-dialog {
+.gallery-item {
+  display: inline-block;
+  text-decoration: none;
+  user-select: none;
+}
+
+ne-dialog-gallery dialog {
   padding: 0;
-  max-height: 90vh;
-  max-width: max-content;
+  timeline-scope: --image;
 
   &::backdrop {
     backdrop-filter: blur(5px);
@@ -22,15 +27,74 @@ dialog {
 
   section {
     padding: 10px;
+    overflow-x: clip;
+    max-height: 90vh;
+    max-width: 80vh;
   }
 
-  img {
-    display: block;
-    margin: 0 auto;
-    max-width: 90vmin;
-    max-height: 80vmin;
+  #dialogImageList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
 
-    height: auto;
+    display: flex;
+    gap: 10px;
+    overflow-x: scroll;
+
+    scroll-snap-type: x mandatory;
+
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    scroll-timeline: --image x;
+    li {
+      scroll-snap-align: center;
+      scroll-behavior: smooth;
+
+      img {
+        display: block;
+        margin: 0 auto;
+        max-width: 90vmin;
+        max-height: 80vmin;
+
+        height: auto;
+      }
+    }
+  }
+
+  #dialogNavList {
+    position: relative;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: inline-flex;
+    background-color: lightgray;
+
+    &::before {
+      content: "";
+      position: absolute;
+      display: block;
+      margin: 0.15rem;
+      width: 1.2rem;
+      height: 1.2rem;
+      border-radius: 50%;
+      background-color: teal;
+
+      animation: position linear;
+      animation-timeline: --image;
+    }
+
+    li a {
+      display: block;
+
+      width: 1.5rem;
+      height: 1.5rem;
+      background-color: white;
+      mask-image: radial-gradient(circle, transparent 50%, black 50%);
+      mask-size: 100%;
+      mask-repeat: no-repeat;
+      mask-position: center;
+    }
   }
 
   form {
@@ -38,7 +102,14 @@ dialog {
     gap: 10px;
   }
 }
-
+@keyframes position {
+  from {
+    left: 0;
+  }
+  to {
+    left: calc(100% - 1.5rem);
+  }
+}
 .gallery {
   display: flex;
   flex-wrap: wrap;
