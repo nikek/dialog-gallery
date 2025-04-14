@@ -15,7 +15,7 @@ dialogTemplate.innerHTML = String.raw`
 `;
 
 export class NeDialogGallery extends HTMLElement {
-  #radios: HTMLInputElement[] = [];
+  #radios = [];
 
   constructor() {
     super();
@@ -27,16 +27,14 @@ export class NeDialogGallery extends HTMLElement {
 
   setup() {
     // Render thumbnails as anchors with images as children just like the original content but switch out the href to target an id within the dialog, also add event listeners to open the dialog when clicked
-    const df = dialogTemplate.content.cloneNode(true) as DocumentFragment;
-    const dialog = df.querySelector("dialog")! as HTMLDialogElement;
+    const df = dialogTemplate.content.cloneNode(true);
+    const dialog = df.querySelector("dialog");
     this.appendChild(dialog);
-    const dialogForm = dialog.querySelector("form")! as HTMLFormElement;
-    const dialogImage = dialog.querySelector(
-      "#dialogImage"
-    )! as HTMLImageElement;
-    const dialogNav = dialog.querySelector("#dialogNav")!;
-    console.log(dialogNav);
-    const dialogClose = dialog.querySelector("#closeBtn")!;
+
+    const dialogForm = dialog.querySelector("form");
+    const dialogImage = dialog.querySelector("#dialogImage");
+    const dialogNav = dialog.querySelector("#dialogNav");
+    const dialogClose = dialog.querySelector("#closeBtn");
 
     const thumbnails = this.querySelectorAll("a");
     thumbnails.forEach((thumbnail, i) => {
@@ -62,7 +60,7 @@ export class NeDialogGallery extends HTMLElement {
     });
 
     // Reusable function to navigate using the arrow keys or prev/next buttons
-    const navigate = (direction: "prev" | "next") => {
+    const navigate = (direction) => {
       const current = this.#radios.findIndex((radio) => radio.checked);
       if (direction === "prev") {
         const prevIndex = current === 0 ? this.#radios.length - 1 : current - 1;
@@ -85,25 +83,22 @@ export class NeDialogGallery extends HTMLElement {
     });
 
     // Use the prev and next buttons to navigate the images
-    const prevButton = dialog.querySelector("#prev")!;
+    const prevButton = dialog.querySelector("#prev");
     prevButton.addEventListener("click", () => navigate("prev"));
-    const nextButton = dialog.querySelector("#next")!;
+    const nextButton = dialog.querySelector("#next");
     nextButton.addEventListener("click", () => navigate("next"));
 
     // Use the radio buttons to navigate the images
     dialogForm.addEventListener("change", () => {
-      const radioValue = (
-        dialogForm.elements.namedItem("image") as RadioNodeList
-      ).value;
+      const radioValue = dialogForm.elements.namedItem("image").value;
       if (radioValue) {
         dialogImage.src = radioValue;
       }
     });
 
     // Light dismiss the dialog when clicking on the backdrop
-    dialog.addEventListener("click", (e: Event) => {
-      if ((e.target as HTMLElement).nodeName === "DIALOG")
-        dialog.close("dismiss");
+    dialog.addEventListener("click", (e) => {
+      if (e.target.nodeName === "DIALOG") dialog.close("dismiss");
     });
 
     dialog.addEventListener("close", () => {
