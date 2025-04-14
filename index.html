@@ -1,10 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script>
+      if (window.location.pathname.includes("dialog-gallery")) {
+        document.head.insertAdjacentHTML(
+          "beforeend",
+          `<base href="/dialog-gallery/" />`
+        );
+      }
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dialog Gallery</title>
-    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
     <h1>Dialog Gallery</h1>
@@ -25,7 +33,7 @@
     </ne-dialog-gallery>
 
     <script type="module">
-      import { NeDialogGallery } from "/ne-dialog-gallery.js";
+      import { NeDialogGallery } from "./ne-dialog-gallery.js";
       customElements.define("ne-dialog-gallery", NeDialogGallery);
     </script>
   </body>
