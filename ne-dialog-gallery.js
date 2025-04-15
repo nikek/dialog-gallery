@@ -56,6 +56,10 @@ export class NeDialogGallery extends HTMLElement {
         e.preventDefault();
         dialog.showModal();
         dialogImage.src = thumb.href;
+        dialogImage.setAttribute(
+          "hint-img-width",
+          thumb.getAttribute("hint-img-width")
+        );
         radio.checked = true;
         radio.focus();
         dialogForm.dispatchEvent(new Event("change"));
